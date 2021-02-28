@@ -5,12 +5,14 @@
 %define keepstatic 1
 Name     : jdupes
 Version  : 1.19.1
-Release  : 1
+Release  : 7
 URL      : file:///aot/build/clearlinux/packages/jdupes/jdupes-v1.19.1.tar.gz
 Source0  : file:///aot/build/clearlinux/packages/jdupes/jdupes-v1.19.1.tar.gz
 Summary  : No detailed summary available
 Group    : Development/Tools
 License  : GPL-2.0
+Requires: jdupes-bin = %{version}-%{release}
+Requires: jdupes-man = %{version}-%{release}
 # Suppress stripping binaries
 %define __strip /bin/true
 %define debug_package %{nil}
@@ -23,6 +25,22 @@ jdupes. It is inefficient. It barely has enough features to be worthy of
 using the word "features" at all. Despite all of that, it's pretty safe
 and produces the same simple match set printouts as jdupes.
 
+%package bin
+Summary: bin components for the jdupes package.
+Group: Binaries
+
+%description bin
+bin components for the jdupes package.
+
+
+%package man
+Summary: man components for the jdupes package.
+Group: Default
+
+%description man
+man components for the jdupes package.
+
+
 %prep
 %setup -q -n jdupes
 cd %{_builddir}/jdupes
@@ -33,7 +51,7 @@ unset https_proxy
 unset no_proxy
 export SSL_CERT_FILE=/var/cache/ca-certs/anchors/ca-certificates.crt
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1614478220
+export SOURCE_DATE_EPOCH=1614478647
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -64,15 +82,23 @@ export MAKEFLAGS=%{?_smp_mflags}
 # export CCACHE_DIRECT=1
 # export CCACHE_SLOPPINESS=pch_defines,locale,time_macros
 # export CCACHE_DISABLE=1
-export RUSTFLAGS="-C target-cpu=native"
+
 ## altflags1 end
-make  %{?_smp_mflags}  V=1 VERBOSE=1
+make  %{?_smp_mflags}  PREFIX=/usr V=1 VERBOSE=1
 
 
 %install
-export SOURCE_DATE_EPOCH=1614478220
+export SOURCE_DATE_EPOCH=1614478647
 rm -rf %{buildroot}
-%make_install
+%make_install PREFIX=/usr V=1 VERBOSE=1
 
 %files
 %defattr(-,root,root,-)
+
+%files bin
+%defattr(-,root,root,-)
+/usr/bin/jdupes
+
+%files man
+%defattr(0644,root,root,0755)
+/usr/share/man/man1/jdupes.1
